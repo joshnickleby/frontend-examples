@@ -12,6 +12,8 @@ export class CharacterSheetHttp {
   // not a real endpoint
   static API = '/api/character-sheets';
 
+  id: number = (Math.random() * 1000) + 1;
+
   constructor(private http: HttpClient) {}
 
   getAllCharacterSheets(): Observable<CharacterSheet[]> {

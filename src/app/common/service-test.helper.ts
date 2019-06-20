@@ -24,6 +24,8 @@ export class ServiceTestHelper<T> {
     // jasmine class cannot get called outside of test file - current work around
     const spy = spyCreatorFn(this.httpObjectName, this.httpMethodNames);
 
+    spy.id = (Math.random() * 1000) + 1;
+
     const existingImports = [HttpClientTestingModule, RouterTestingModule, ...imports];
     const existingProviders = [serviceClass, { provide: httpClass, useValue: spy }, ...providers];
 

@@ -10,6 +10,8 @@ import {FileAware} from '../../common/file-aware';
 })
 export class CharacterSheetService extends FileAware {
 
+  private numberOfCharacterSheets = 1;
+
   characterSheets$: ListBehaviorSubject<CharacterSheet> = ListBehaviorSubject.create();
 
   constructor(private http: CharacterSheetHttp) {
@@ -17,9 +19,12 @@ export class CharacterSheetService extends FileAware {
   }
 
   getAllCharacterSheets(): void {
+    this.log('getAllCharacterSheets', this.http);
+
     this.http.getAllCharacterSheets()
       .pipe(
-        tap(sheets => this.logTable('getAllCharacterSheets', 'Character Sheets', sheets))
+        tap(sheets => this.logTable('getAllCharacterSheets', 'Character Sheets', sheets)),
+        tap(sheets => sheets.forEach(sheet => sheet.id = this.numberOfCharacterSheets++))  // testing purposes
       )
       .subscribe(sheets => this.characterSheets$.next(sheets));
   }
