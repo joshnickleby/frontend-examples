@@ -14,9 +14,9 @@ describe('CharacterSheetService', () => {
   ]);
 
 
-  beforeEach(() =>
+  beforeEach(async(() =>
     env.configureEnv(CharacterSheetService, CharacterSheetHttp, (name, method) => jasmine.createSpyObj(name, method))
-  );
+  ));
 
   it('should be created', () => {
     const service: CharacterSheetService = env.service;

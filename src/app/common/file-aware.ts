@@ -1,5 +1,6 @@
-
-
+/**
+ * Common logging class to extend.
+ */
 export class FileAware {
 
   constructor(private className: string) {}
