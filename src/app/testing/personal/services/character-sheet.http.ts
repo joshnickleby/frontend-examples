@@ -28,4 +28,8 @@ export class CharacterSheetHttp {
   saveNewCharacterSheet(sheet: CharacterSheet): Observable<CharacterSheet> {
     return this.http.post<CharacterSheet>(`${CharacterSheetHttp.API}/`, sheet, JSON_HTTP_OPTIONS);
   }
+
+  deleteCharacterSheet(id: number): Observable<boolean> {
+    return this.http.delete<boolean>(`${CharacterSheetHttp.API}/${id}`);
+  }
 }

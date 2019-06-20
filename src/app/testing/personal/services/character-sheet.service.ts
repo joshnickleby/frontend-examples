@@ -54,4 +54,13 @@ export class CharacterSheetService extends FileAware {
       tap(savedSheet => this.getAllCharacterSheets())
     ).subscribe();
   }
+
+  deleteCharacterSheet(id: number) {
+    this.http.deleteCharacterSheet(id).pipe(
+      tap(deleted => console.log('deleteCharacterSheet', deleted ? 'Success' : 'ERROR!', id)),
+      tap(deleted => {
+        if (deleted) { this.getAllCharacterSheets(); }
+      })
+    ).subscribe();
+  }
 }

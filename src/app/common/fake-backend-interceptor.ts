@@ -40,12 +40,38 @@ export class FakeBackendInterceptor implements HttpInterceptor {
           return throwError({ error: { message: `Name: ${newCharacterSheet.name} is already taken`}});
         }
 
-        newCharacterSheet.id = characterSheets.length + 1;
+        const currentId = parseInt(localStorage.getItem('characterSheetCount') || '0', 10) + 1;
+
+        localStorage.setItem('characterSheetCount', `${currentId}`);
+
+        newCharacterSheet.id = currentId;
         characterSheets.push(newCharacterSheet);
 
         localStorage.setItem('characters', JSON.stringify(characterSheets));
 
         return of(new HttpResponse({ status: 200, body: newCharacterSheet }));
+      }
+
+      // delete
+      if (req.url.match(/\/api\/character-sheets\/\d+$/) && req.method === 'DELETE') {
+        const urlParts = req.url.split('/');
+        const id = parseInt(urlParts[urlParts.length - 1], 10);
+
+        let deleted = false;
+
+        for (let i = 0; i < characterSheets.length; i++) {
+          const sheet = characterSheets[i];
+
+          if (sheet.id === id) {
+            // delete sheet
+            deleted = true;
+            characterSheets.splice(i, 1);
+            localStorage.setItem('characters', JSON.stringify(characterSheets));
+            break;
+          }
+        }
+
+        return of(new HttpResponse({ status: 200, body: deleted }));
       }
 
       return next.handle(req);

@@ -19,6 +19,7 @@
         <th>ID</th>
         <th>Name</th>
         <th></th>
+        <th></th>
       </tr>
 
       <tr *ngFor="let sheet of characterSheetService.characterSheets$ | async">
@@ -26,6 +27,9 @@
         <td>{{sheet.name}}</td>
         <td>
           <button (click)="characterSheetService.getCharacterSheetById(sheet.id)">Select</button>
+        </td>
+        <td>
+          <button (click)="characterSheetService.deleteCharacterSheet(sheet.id)">Delete</button>
         </td>
       </tr>
     </table>
