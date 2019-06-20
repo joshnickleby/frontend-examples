@@ -1,10 +1,9 @@
 import {Injectable} from '@angular/core';
 import {CharacterSheetHttp} from './character-sheet.http';
 import {ListBehaviorSubject} from '../../../common/list-behavior-subject';
-import {CharacterSheet, generateNewCharacterSheetForm} from '../domain/character-sheet.model';
+import {CharacterSheet} from '../domain/character-sheet.model';
 import {tap} from 'rxjs/operators';
 import {FileAware} from '../../../common/file-aware';
-import {FormGroup} from '@angular/forms';
 import {SingleObjectList} from '../../../common/single-object-list';
 
 @Injectable({
@@ -17,6 +16,8 @@ export class CharacterSheetService extends FileAware {
   characterSheets$: ListBehaviorSubject<CharacterSheet> = ListBehaviorSubject.create();
 
   newCharacterSheet$: SingleObjectList<CharacterSheet> = new SingleObjectList(CharacterSheet.generateNewCharacterSheet());
+
+  selectedCharacterSheet$: SingleObjectList<CharacterSheet> = new SingleObjectList();
 
   constructor(private http: CharacterSheetHttp) {
     super('CharacterSheetService');
@@ -31,6 +32,12 @@ export class CharacterSheetService extends FileAware {
         tap(sheets => sheets.forEach(sheet => sheet.id = this.numberOfCharacterSheets++))  // testing purposes
       )
       .subscribe(sheets => this.characterSheets$.next(sheets));
+  }
+
+  getCharacterSheetById(id: number) {
+    this.http.getCharacterSheetById(id).pipe(
+      tap(sheet => this.log('getCharacterSheetById', sheet))
+    ).subscribe(sheet => this.selectedCharacterSheet$.change(sheet));
   }
 
   saveNewCharacterSheet(): void {

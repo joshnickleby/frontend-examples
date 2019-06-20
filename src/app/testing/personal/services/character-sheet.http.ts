@@ -21,6 +21,10 @@ export class CharacterSheetHttp {
     return this.http.get<CharacterSheet[]>(`${CharacterSheetHttp.API}/`);
   }
 
+  getCharacterSheetById(id: number): Observable<CharacterSheet> {
+    return this.http.get<CharacterSheet>(`${CharacterSheetHttp.API}/${id}`);
+  }
+
   saveNewCharacterSheet(sheet: CharacterSheet): Observable<CharacterSheet> {
     return this.http.post<CharacterSheet>(`${CharacterSheetHttp.API}/`, sheet, JSON_HTTP_OPTIONS);
   }

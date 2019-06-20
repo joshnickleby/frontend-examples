@@ -19,11 +19,17 @@ export class FakeBackendInterceptor implements HttpInterceptor {
         return of(new HttpResponse({ status: 200, body: characterSheets}));
       }
 
-      // // get by id
-      // if (req.url.match(`${CharacterSheetHttp.API}\d+$`) && req.method === 'GET') {
-      //
-      // }
+      // get by id
+      if (req.url.match(/\/api\/character-sheets\/\d+$/) && req.method === 'GET') {
+        const urlParts = req.url.split('/');
+        const id = parseInt(urlParts[urlParts.length - 1], 10);
+        const matchedSheet = characterSheets.filter(characterSheet => characterSheet.id === id);
+        const sheet = matchedSheet.length ? matchedSheet[0] : null;
 
+        return of(new HttpResponse({ status: 200, body: sheet }));
+      }
+
+      // save new
       if (req.url.endsWith(`${CharacterSheetHttp.API}/`) && req.method === 'POST') {
         // get new sheet object from post body
         const newCharacterSheet = req.body;

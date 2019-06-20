@@ -1,6 +1,4 @@
 
-<h1>Character Sheets</h1>
-
 <div *ngFor="let sheet of characterSheetService.newCharacterSheet$ | async">
   <form [formGroup]="sheet.form" (ngSubmit)="characterSheetService.saveNewCharacterSheet()" novalidate>
     <div class="form-group">
@@ -13,14 +11,29 @@
   </form>
 </div>
 
-<table>
-  <tr>
-    <th>ID</th>
-    <th>Name</th>
-  </tr>
+<div style="display: flex; justify-content: space-between">
+  <div>
+    <h1>Character Sheet List</h1>
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th></th>
+      </tr>
 
-  <tr *ngFor="let sheet of characterSheetService.characterSheets$ | async">
-    <td>{{sheet.id}}</td>
-    <td>{{sheet.name}}</td>
-  </tr>
-</table>
+      <tr *ngFor="let sheet of characterSheetService.characterSheets$ | async">
+        <td>{{sheet.id}}</td>
+        <td>{{sheet.name}}</td>
+        <td>
+          <button (click)="characterSheetService.getCharacterSheetById(sheet.id)">Select</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div *ngFor="let sheet of characterSheetService.selectedCharacterSheet$ | async">
+    <h1>Selected Character Sheet</h1>
+    <div>{{sheet?.id}}</div>
+    <div>{{sheet?.name}}</div>
+  </div>
+</div>
