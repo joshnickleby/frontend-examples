@@ -1,0 +1,26 @@
+
+<h1>Character Sheets</h1>
+
+<div *ngFor="let sheet of characterSheetService.newCharacterSheet$ | async">
+  <form [formGroup]="sheet.form" (ngSubmit)="characterSheetService.saveNewCharacterSheet()" novalidate>
+    <div class="form-group">
+      <label class="center-block">Name:
+        <input class="form-control" formControlName="name">
+      </label>
+
+      <button type="submit" [disabled]="!sheet.form.valid" class="btn btn-success">Save</button>
+    </div>
+  </form>
+</div>
+
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Name</th>
+  </tr>
+
+  <tr *ngFor="let sheet of characterSheetService.characterSheets$ | async">
+    <td>{{sheet.id}}</td>
+    <td>{{sheet.name}}</td>
+  </tr>
+</table>

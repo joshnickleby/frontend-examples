@@ -1,12 +1,11 @@
-import {async, TestBed} from '@angular/core/testing';
+import {async} from '@angular/core/testing';
 
-import { CharacterSheetService } from './character-sheet.service';
-import {ServiceTestHelper} from '../../common/service-test.helper';
+import {CharacterSheetService} from './character-sheet.service';
+import {ServiceTestHelper} from '../../../common/service-test.helper';
 import {CharacterSheetHttp} from './character-sheet.http';
-import {CharacterSheet} from './domain/character-sheet.model';
-import {Observable} from 'rxjs';
-import {ListBehaviorSubject} from '../../common/list-behavior-subject';
-import {TestListAssertionHelper} from '../../common/test-list-assertion.helper';
+import {CharacterSheet} from '../domain/character-sheet.model';
+import {ListBehaviorSubject} from '../../../common/list-behavior-subject';
+import {TestListAssertionHelper} from '../../../common/test-list-assertion.helper';
 
 describe('CharacterSheetService', () => {
   const env = new ServiceTestHelper<CharacterSheetService>('CharacterSheetHttp', [
