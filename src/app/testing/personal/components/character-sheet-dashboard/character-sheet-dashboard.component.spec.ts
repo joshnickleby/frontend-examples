@@ -26,8 +26,8 @@ fdescribe('CharacterSheetDashboardComponent', () => {
     new CharacterSheet('Tully', 5)
   ];
 
-  const sharedSheetLookupFn = (assignFn: (sheet: CharacterSheet) => any, selectorValue: string) => {
-    const expectedVal = expectedSheets.map(assignFn);
+  const sharedSheetLookupFn = (expected: CharacterSheet[], assignFn: (sheet: CharacterSheet) => any, selectorValue: string) => {
+    const expectedVal = expected.map(assignFn);
 
     // setup expected values
     const assert = new TestListAssertionHelper(expectedVal);
@@ -47,6 +47,16 @@ fdescribe('CharacterSheetDashboardComponent', () => {
     assert.testCustom((id, el) => el.toString().includes(id));
   };
 
+  const getFirstButtonsFn = () => {
+    // get the first element in the list
+    const rows: DebugElement[] = fixture.debugElement.queryAll(By.css('.sheets'));
+
+    const firstRow: DebugElement = rows[0];
+
+    // get the first buttons
+    return firstRow.queryAll(By.css('button'));
+  };
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ CharacterSheetDashboardComponent ],
@@ -57,13 +67,25 @@ fdescribe('CharacterSheetDashboardComponent', () => {
       providers: [ { provide: CharacterSheetService, useValue: serviceSpy } ]
     })
     .compileComponents().then(() => {
-      // serviceSpy.selectedCharacterSheet$ = new SingleObjectList();
+      serviceSpy.selectedCharacterSheet$ = new SingleObjectList();
       serviceSpy.characterSheets$ = ListBehaviorSubject.create();
-
-      serviceSpy.getAllCharacterSheets.and.callFake(() => serviceSpy.characterSheets$.next(expectedSheets));
 
       fixture = TestBed.createComponent(CharacterSheetDashboardComponent);
       component = fixture.componentInstance;
+
+      serviceSpy.getAllCharacterSheets.and.callFake(() => serviceSpy.characterSheets$.next(expectedSheets));
+      serviceSpy.getCharacterSheetById.and.callFake(id => {
+        const foundSheet = expectedSheets.find(sheet => sheet.id === id);
+
+        // has to change the component's service variable
+        component.characterSheetService.selectedCharacterSheet$.change(foundSheet);
+      });
+      serviceSpy.deleteCharacterSheet.and.callFake(id => {
+        const sheets = expectedSheets.filter(sheet => sheet.id !== id);
+
+        component.characterSheetService.characterSheets$.next(sheets);
+      });
+
       fixture.detectChanges();
     });
   }));
@@ -74,31 +96,15 @@ fdescribe('CharacterSheetDashboardComponent', () => {
 
   it('should display all character sheets', async(() => {
     // check the ids match for each row
-    sharedSheetLookupFn(sheet => sheet.id, '.sheet-id');
+    sharedSheetLookupFn(expectedSheets, sheet => sheet.id, '.sheet-id');
 
     // check the names match for each row
-    sharedSheetLookupFn(sheet => sheet.name, '.sheet-name');
+    sharedSheetLookupFn(expectedSheets, sheet => sheet.name, '.sheet-name');
   }));
 
-  it('show display a character when button gets clicked', async(() => {
-    // assign the service variable of the component
-    component.characterSheetService.selectedCharacterSheet$ = new SingleObjectList();
-
-    // setup the method
-    serviceSpy.getCharacterSheetById.and.callFake(id => {
-      const foundSheet = expectedSheets.find(sheet => sheet.id === id);
-      console.log('------------------------called fake', foundSheet);
-
-      component.characterSheetService.selectedCharacterSheet$.change(foundSheet);
-    });
-
-    // get the first element in the list
-    const rows: DebugElement[] = fixture.debugElement.queryAll(By.css('.sheets'));
-
-    const firstRow: DebugElement = rows[0];
-
-    // get the first button
-    const buttons = firstRow.queryAll(By.css('button'));
+  it('should display a character when button gets clicked', async(() => {
+    // get buttons from first item in list
+    const buttons = getFirstButtonsFn();
 
     const selectButton = buttons[0];
 
@@ -116,5 +122,23 @@ fdescribe('CharacterSheetDashboardComponent', () => {
     // assert the changes
     expect(idElement.innerText.includes('' + selectedSheet.id)).toEqual(true);
     expect(nameElement.innerText.includes(selectedSheet.name)).toEqual(true);
+  }));
+
+  it('should delete a character if the delete button gets clicked', async(() => {
+    // get buttons from first item in list
+    const buttons = getFirstButtonsFn();
+
+    const deleteButton = buttons[1];
+
+    // click the button
+    deleteButton.nativeElement.click();
+
+    fixture.detectChanges();
+
+    // check that it has been removed
+    const existingSheets = component.characterSheetService.characterSheets$.getValue();
+
+    sharedSheetLookupFn(existingSheets, sheet => sheet.id, '.sheet-id');
+    sharedSheetLookupFn(existingSheets, sheet => sheet.name, '.sheet-name');
   }));
 });
