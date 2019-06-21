@@ -37,7 +37,7 @@
 
   <div *ngFor="let sheet of characterSheetService.selectedCharacterSheet$ | async">
     <h1>Selected Character Sheet</h1>
-    <div>{{sheet?.id}}</div>
-    <div>{{sheet?.name}}</div>
+    <div class="selected-sheet-id">{{sheet?.id}}</div>
+    <div class="selected-sheet-name">{{sheet?.name}}</div>
   </div>
 </div>
