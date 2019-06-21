@@ -4,13 +4,13 @@
 I wanted to make Angular testing easier and learn how to mock objects similar to
 Java + Mockito.
 
-[CharacterServiceTest](https://github.com/joshnickleby/angular-examples/blob/master/src/app/testing/personal/character-sheet.service.spec.ts)
+[CharacterServiceTest](https://github.com/joshnickleby/angular-examples/blob/master/src/app/testing/personal/services/character-sheet.service.spec.ts)
 
 # Reasoning
 
 ## HTTP Class
 
-[CharacterSheetHttp](https://github.com/joshnickleby/angular-examples/blob/master/src/app/testing/personal/character-sheet.http.ts)
+[CharacterSheetHttp](https://github.com/joshnickleby/angular-examples/blob/master/src/app/testing/personal/services/character-sheet.http.ts)
 
 File format: `<class-name>.http.ts`
 
@@ -21,7 +21,7 @@ It also allows you to mock the client easier or create classes around it.
 
 ## Service Class
 
-[CharacterService](https://github.com/joshnickleby/angular-examples/blob/master/src/app/testing/personal/character-sheet.service.ts)
+[CharacterService](https://github.com/joshnickleby/angular-examples/blob/master/src/app/testing/personal/services/character-sheet.service.ts)
 
 File format: `<class-name>.service.ts`
 

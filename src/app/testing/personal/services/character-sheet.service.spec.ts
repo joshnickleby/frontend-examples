@@ -31,23 +31,29 @@ describe('CharacterSheetService', () => {
   });
 
   it('#getAllCharacterSheets should get character sheets', async(() => {
+    // add the expected sheets to the list comparator
     const assert = new TestListAssertionHelper(expectedSheets);
 
+    // create an observable as a return to the http request
     const obs = ListBehaviorSubject.create(assert.expectedList);
 
-    // mock the http call
+    // mock the http call and return the observable
     env.httpSpy.getAllCharacterSheets.and.returnValue(obs);
 
     // populate the variables in the service
     env.service.getAllCharacterSheets();
 
+    // check the returned sheets
     env.service.characterSheets$.subscribe(sheets => {
       assert.actualList = sheets;
 
+      // check that they are the same size
       expect(assert.testSameLength()).toEqual(true);
 
+      // check they have the same name
       expect(assert.testSameValues('name')).toEqual(true);
 
+      // check they have the given id
       expect(assert.testSameValuesCustom('id', [1, 2, 3, 4, 5])).toEqual(true);
     });
   }));
@@ -57,15 +63,47 @@ describe('CharacterSheetService', () => {
 
     const obs = new BehaviorSubject(expected);
 
-    // mock the http call
+    // mock the http call and return the expected observable
     env.httpSpy.getCharacterSheetById.and.callFake(id => id === 2 ? obs : null);
 
+    // call the service to get by id 2
     env.service.getCharacterSheetById(2);
 
+    // check that the sheet has the correct id and name
     env.service.selectedCharacterSheet$.subscribe(sheetWrapper => {
       const sheet = sheetWrapper[0];
       expect(sheet.id).toEqual(2);
       expect(sheet.name).toEqual(expectedSheets[1].name);
+    });
+  }));
+
+  it('#saveNewCharacterSheet should save new sheet', async(() => {
+    // create the object with the form inside
+    const formCharacterSheet = CharacterSheet.generateNewCharacterSheet();
+
+    // populate the form data
+    formCharacterSheet.form.get('name').setValue('Toby');
+
+    // add object to service
+    env.service.newCharacterSheet$.change(formCharacterSheet);
+
+    // when http save gets called add an id and return it as though it was saved
+    env.httpSpy.saveNewCharacterSheet.and.callFake(sheet => {
+      sheet.id = 6;
+      return new BehaviorSubject(sheet);
+    });
+
+    // call service - it should populate the list of all with just the one sheet
+    env.service.saveNewCharacterSheet();
+
+    // check that there is only one sheet at that it is the correct one
+    env.service.characterSheets$.subscribe(sheets => {
+      expect(sheets.length).toEqual(1);
+
+      const sheet = sheets[0];
+
+      expect(sheet.id).toEqual(6);
+      expect(sheet.name).toEqual('Toby');
     });
   }));
 });

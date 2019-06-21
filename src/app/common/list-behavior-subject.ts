@@ -21,6 +21,10 @@ export class ListBehaviorSubject<T> extends BehaviorSubject<T[]> {
     this.shareUpdate((list: T[]) => list.filter(t => t != item));
   }
 
+  removeByCriteria(criteria: string, value: any) {
+    this.shareUpdate((list: T[]) => list.filter(t => t[criteria] === value));
+  }
+
   clear() { this.next([]); }
 
   private shareUpdate(updateFn) {

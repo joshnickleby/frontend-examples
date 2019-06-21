@@ -38,26 +38,26 @@ export class CharacterSheetService extends FileAware {
   }
 
   saveNewCharacterSheet(): void {
+
+
     const sheet = this.newCharacterSheet$.getItem();
 
     this.newCharacterSheet$.change(CharacterSheet.generateNewCharacterSheet());
 
     sheet.applyFormGroup();
 
-    console.log(sheet);
-
     this.http.saveNewCharacterSheet(sheet).pipe(
-      tap(savedSheet => this.log('saveNewCharacterSheet', savedSheet)),
-      tap(savedSheet => this.getAllCharacterSheets())
-    ).subscribe();
+      tap(savedSheet => this.log('saveNewCharacterSheet', savedSheet))
+    ).subscribe(savedSheet => this.characterSheets$.add(savedSheet));
   }
 
   deleteCharacterSheet(id: number) {
     this.http.deleteCharacterSheet(id).pipe(
       tap(deleted => console.log('deleteCharacterSheet', deleted ? 'Success' : 'ERROR!', id)),
-      tap(deleted => {
-        if (deleted) { this.getAllCharacterSheets(); }
-      })
-    ).subscribe();
+    ).subscribe(deleted => {
+      if (deleted) {
+        this.characterSheets$.removeByCriteria('id', id);
+      }
+    });
   }
 }
