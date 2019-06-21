@@ -5,6 +5,7 @@ I wanted to make Angular testing easier and learn how to mock objects similar to
 Java + Mockito.
 
 [CharacterSheetServiceTest](https://github.com/joshnickleby/angular-examples/blob/master/src/app/testing/personal/services/character-sheet.service.spec.ts)
+
 [CharacterSheetDashboardComponentTest](https://github.com/joshnickleby/angular-examples/blob/master/src/app/testing/personal/components/character-sheet-dashboard/character-sheet-dashboard.component.spec.ts)
 
 # Reasoning
@@ -82,12 +83,16 @@ match in exact order.
 
 ### Component Class
 
+[CharacterSheetComponent](https://github.com/joshnickleby/angular-examples/blob/master/src/app/testing/personal/components/character-sheet-dashboard/character-sheet-dashboard.component.ts)
+
 I try to keep as little of the logic in this as possible. Mainly just the `ngOnInit` call to populate the list to reduce the
 calls and have it specific to this component.
 
 If I have some specific logic for this component I will make functions for it; otherwise I will try to keep it as simple as possible.
 
 ### Component View
+
+[character-sheet-dashboard.component.html](https://github.com/joshnickleby/angular-examples/blob/master/src/app/testing/personal/components/character-sheet-dashboard/character-sheet-dashboard.component.html)
 
 For any table/list view I use the `*ngFor` format. Using the the variables in the service allow me to call the variable directly.
 
