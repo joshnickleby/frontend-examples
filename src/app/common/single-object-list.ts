@@ -36,4 +36,8 @@ export class SingleObjectList<T> extends BehaviorSubject<T[]> {
 
     return val.length > 0 ? val[0] : null;
   }
+
+  listen(subscribeFn: (T) => void) {
+    this.subscribe(hiddenList => subscribeFn(hiddenList[0]));
+  }
 }

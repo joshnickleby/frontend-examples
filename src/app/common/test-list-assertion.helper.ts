@@ -24,10 +24,6 @@ export class TestListAssertionHelper {
   testSameValuesCustom(key: string, values: any[]): boolean {
     return values.length === this.actualList.length &&
       Array.from(Array(this.actualList.length).keys())
-        .map(i => {
-          console.log(values[i], this.actualList[i][key]);
-          return i;
-        })
         .map(i => values[i] === this.actualList[i][key])
         .reduce((p, q) => p && q);
   }

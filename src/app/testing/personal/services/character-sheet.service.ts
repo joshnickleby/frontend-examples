@@ -11,8 +11,6 @@ import {SingleObjectList} from '../../../common/single-object-list';
 })
 export class CharacterSheetService extends FileAware {
 
-  private numberOfCharacterSheets = 1;
-
   characterSheets$: ListBehaviorSubject<CharacterSheet> = ListBehaviorSubject.create();
 
   newCharacterSheet$: SingleObjectList<CharacterSheet> = new SingleObjectList(CharacterSheet.generateNewCharacterSheet());
@@ -28,8 +26,7 @@ export class CharacterSheetService extends FileAware {
 
     this.http.getAllCharacterSheets()
       .pipe(
-        tap(sheets => this.logTable('getAllCharacterSheets', 'Character Sheets', sheets)),
-        tap(sheets => sheets.forEach(sheet => sheet.id = this.numberOfCharacterSheets++))  // testing purposes
+        tap(sheets => this.logTable('getAllCharacterSheets', 'Character Sheets', sheets))
       )
       .subscribe(sheets => this.characterSheets$.next(sheets));
   }
