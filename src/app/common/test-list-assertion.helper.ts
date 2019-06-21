@@ -28,6 +28,12 @@ export class TestListAssertionHelper {
         .reduce((p, q) => p && q);
   }
 
+  testCustom(predicateFn: (expected, actual) => boolean): boolean {
+    return Array.from(Array(this.expectedList.length).keys())
+      .map(i => predicateFn(this.expectedList[i], this.actualList[i]))
+      .reduce((p, q) => p && q);
+  }
+
   testSameLength(): boolean {
     return this.expectedList.length === this.actualList.length;
   }

@@ -124,14 +124,10 @@ describe('CharacterSheetService', () => {
     // all including id 2
     mockGetAllSheets(expectedSheets);
 
-    console.log('------------------------ 1', env.service.characterSheets$.getValue());
-
     // if id is 2 then return true otherwise don't delete (false)
     env.httpSpy.deleteCharacterSheet.and.callFake(id => new BehaviorSubject(id === 2));
 
     env.service.deleteCharacterSheet(2);
-
-    console.log('------------------------ 1', env.service.characterSheets$.getValue());
 
     env.service.characterSheets$.subscribe(sheets => {
       assert.actualList = sheets;

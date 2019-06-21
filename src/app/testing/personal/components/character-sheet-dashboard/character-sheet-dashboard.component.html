@@ -22,9 +22,9 @@
         <th></th>
       </tr>
 
-      <tr *ngFor="let sheet of characterSheetService.characterSheets$ | async">
-        <td>{{sheet.id}}</td>
-        <td>{{sheet.name}}</td>
+      <tr class="sheets" *ngFor="let sheet of characterSheetService.characterSheets$ | async">
+        <td class="sheet-id">{{sheet.id}}</td>
+        <td class="sheet-name">{{sheet.name}}</td>
         <td>
           <button (click)="characterSheetService.getCharacterSheetById(sheet.id)">Select</button>
         </td>
