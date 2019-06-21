@@ -21,6 +21,17 @@ describe('CharacterSheetService', () => {
     new CharacterSheet('Tully', 5)
   ];
 
+  const mockGetAllSheets = (list: CharacterSheet[]) => {
+    // create an observable as a return to the http request
+    const obs = ListBehaviorSubject.create(list);
+
+    // mock the http call and return the observable
+    env.httpSpy.getAllCharacterSheets.and.returnValue(obs);
+
+    // populate the variables in the service
+    env.service.getAllCharacterSheets();
+  };
+
   beforeEach(async(() =>
     env.configureEnv(CharacterSheetService, CharacterSheetHttp, (name, method) => jasmine.createSpyObj(name, method))
   ));
@@ -34,14 +45,7 @@ describe('CharacterSheetService', () => {
     // add the expected sheets to the list comparator
     const assert = new TestListAssertionHelper(expectedSheets);
 
-    // create an observable as a return to the http request
-    const obs = ListBehaviorSubject.create(assert.expectedList);
-
-    // mock the http call and return the observable
-    env.httpSpy.getAllCharacterSheets.and.returnValue(obs);
-
-    // populate the variables in the service
-    env.service.getAllCharacterSheets();
+    mockGetAllSheets(assert.expectedList);
 
     // check the returned sheets
     env.service.characterSheets$.subscribe(sheets => {
@@ -78,6 +82,7 @@ describe('CharacterSheetService', () => {
   }));
 
   it('#saveNewCharacterSheet should save new sheet', async(() => {
+
     // create the object with the form inside
     const formCharacterSheet = CharacterSheet.generateNewCharacterSheet();
 
@@ -104,6 +109,41 @@ describe('CharacterSheetService', () => {
 
       expect(sheet.id).toEqual(6);
       expect(sheet.name).toEqual('Toby');
+    });
+  }));
+
+  it('#deleteCharacterSheet should delete the given sheet', async(() => {
+    // add the expected list of character sheets (without id 2)
+    const assert = new TestListAssertionHelper([
+      new CharacterSheet('Tact', 1),
+      new CharacterSheet('Ariel', 3),
+      new CharacterSheet('Gidgit', 4),
+      new CharacterSheet('Tully', 5)
+    ]);
+
+    // all including id 2
+    mockGetAllSheets(expectedSheets);
+
+    console.log('------------------------ 1', env.service.characterSheets$.getValue());
+
+    // if id is 2 then return true otherwise don't delete (false)
+    env.httpSpy.deleteCharacterSheet.and.callFake(id => new BehaviorSubject(id === 2));
+
+    env.service.deleteCharacterSheet(2);
+
+    console.log('------------------------ 1', env.service.characterSheets$.getValue());
+
+    env.service.characterSheets$.subscribe(sheets => {
+      assert.actualList = sheets;
+
+      // check that they are the same size
+      expect(assert.testSameLength()).toEqual(true);
+
+      // check they have the same name
+      expect(assert.testSameValues('name')).toEqual(true);
+
+      // check they have the given id
+      expect(assert.testSameValues('id')).toEqual(true);
     });
   }));
 });

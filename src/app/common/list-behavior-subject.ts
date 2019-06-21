@@ -14,7 +14,7 @@ export class ListBehaviorSubject<T> extends BehaviorSubject<T[]> {
   }
 
   add(item: T) {
-    this.shareUpdate((list: T[]) => list.push(item));
+    this.shareUpdate((list: T[]) => [...list, item]);
   }
 
   remove(item: T) {
@@ -22,14 +22,14 @@ export class ListBehaviorSubject<T> extends BehaviorSubject<T[]> {
   }
 
   removeByCriteria(criteria: string, value: any) {
-    this.shareUpdate((list: T[]) => list.filter(t => t[criteria] === value));
+    this.shareUpdate((list: T[]) => list.filter(t => t[criteria] !== value));
   }
 
   clear() { this.next([]); }
 
   private shareUpdate(updateFn) {
-    const existing = this.getValue();
-    updateFn(existing);
+    const existing = updateFn(this.getValue());
+
     this.next(existing);
   }
 }
