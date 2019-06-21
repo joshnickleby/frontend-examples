@@ -9,6 +9,8 @@ import {TestListAssertionHelper} from '../../../common/test-list-assertion.helpe
 import {BehaviorSubject} from 'rxjs';
 
 describe('CharacterSheetService', () => {
+  // var 1: HTTP Object Name
+  // var 2: HTTP Object Methods - these get defined in the tests
   const env = new ServiceTestHelper<CharacterSheetService>('CharacterSheetHttp', [
     'getAllCharacterSheets', 'getCharacterSheetById', 'saveNewCharacterSheet', 'deleteCharacterSheet'
   ]);
@@ -21,6 +23,9 @@ describe('CharacterSheetService', () => {
     new CharacterSheet('Tully', 5)
   ];
 
+  // ListBehaviorSubject is just BehaviorSubject<T[]>
+  //    env.httpSpy is a Jasmine Spy Object of the HTTP Class (basically a service)
+  //    env.service contains the mock HTTP class and its normal methods
   const mockGetAllSheets = (list: CharacterSheet[]) => {
     // create an observable as a return to the http request
     const obs = ListBehaviorSubject.create(list);
@@ -33,6 +38,8 @@ describe('CharacterSheetService', () => {
   };
 
   beforeEach(async(() =>
+    // Creates the TestBed, adds CharacterSheetService to providers as well as the CharacterSheetHttp with a
+    //    used class made by the passed in spyCreatorFn *see ServiceTestHelper
     env.configureEnv(CharacterSheetService, CharacterSheetHttp, (name, method) => jasmine.createSpyObj(name, method))
   ));
 
@@ -42,9 +49,10 @@ describe('CharacterSheetService', () => {
   });
 
   it('#getAllCharacterSheets should get character sheets', async(() => {
-    // add the expected sheets to the list comparator
+    // add the expected sheets to the list comparator - has expected list & actual list
     const assert = new TestListAssertionHelper(expectedSheets);
 
+    // add the expected list of sheets to the mock.getAllCharacterSheet function
     mockGetAllSheets(assert.expectedList);
 
     // check the returned sheets
@@ -73,7 +81,7 @@ describe('CharacterSheetService', () => {
     // call the service to get by id 2
     env.service.getCharacterSheetById(2);
 
-    // check that the sheet has the correct id and name
+    // check that the sheet has the correct id and name - using the SingleObjectList wrapper function
     env.service.selectedCharacterSheet$.subscribe(sheetWrapper => {
       const sheet = sheetWrapper[0];
       expect(sheet.id).toEqual(2);
@@ -89,7 +97,7 @@ describe('CharacterSheetService', () => {
     // populate the form data
     formCharacterSheet.form.get('name').setValue('Toby');
 
-    // add object to service
+    // add object to service - using a SingleObjectList again
     env.service.newCharacterSheet$.change(formCharacterSheet);
 
     // when http save gets called add an id and return it as though it was saved
@@ -101,7 +109,7 @@ describe('CharacterSheetService', () => {
     // call service - it should populate the list of all with just the one sheet
     env.service.saveNewCharacterSheet();
 
-    // check that there is only one sheet at that it is the correct one
+    // check that there is only one sheet and that it is the correct one - started as an empty array for this test
     env.service.characterSheets$.subscribe(sheets => {
       expect(sheets.length).toEqual(1);
 

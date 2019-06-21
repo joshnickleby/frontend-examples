@@ -27,10 +27,12 @@ export class SingleObjectList<T> extends BehaviorSubject<T[]> {
     super(item === null ? [] : [item]);
   }
 
+  // used to constrict the next function to a single item
   change(item: T) {
     super.next([item]);
   }
 
+  // used to constrict the getValue function to a single item
   getItem(): T {
     const val = super.getValue();
 

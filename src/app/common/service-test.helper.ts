@@ -18,7 +18,7 @@ export class ServiceTestHelper<T> {
   // used in the spy creation
   constructor(
     public httpObjectName: string,
-    public httpMethodNames: string[]) {}
+    public httpMethodNames: string[] = []) {}
 
   configureEnv(serviceClass, httpClass, spyCreatorFn, providers: any[] = [], imports: any[] = []) {
     // jasmine class cannot get called outside of test file - current work around

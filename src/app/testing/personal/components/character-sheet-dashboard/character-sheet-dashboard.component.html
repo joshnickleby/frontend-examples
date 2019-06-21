@@ -5,9 +5,9 @@
       <label class="center-block">Name:
         <input class="form-control sheet-name-input" formControlName="name">
       </label>
-
-      <button type="submit" [disabled]="!sheet.form.valid" class="btn btn-success save-sheet-btn">Save</button>
     </div>
+
+    <button type="submit" [disabled]="sheet.form.invalid" class="btn btn-success save-sheet-btn">Save</button>
   </form>
 </div>
 
