@@ -38,8 +38,6 @@ export class CharacterSheetService extends FileAware {
   }
 
   saveNewCharacterSheet(): void {
-
-
     const sheet = this.newCharacterSheet$.getItem();
 
     this.newCharacterSheet$.change(CharacterSheet.generateNewCharacterSheet());

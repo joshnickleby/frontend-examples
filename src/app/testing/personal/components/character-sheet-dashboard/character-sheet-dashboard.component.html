@@ -1,12 +1,12 @@
 
 <div *ngFor="let sheet of characterSheetService.newCharacterSheet$ | async">
-  <form [formGroup]="sheet.form" (ngSubmit)="characterSheetService.saveNewCharacterSheet()" novalidate>
+  <form class="new-sheet-form" [formGroup]="sheet.form" (ngSubmit)="characterSheetService.saveNewCharacterSheet()" novalidate>
     <div class="form-group">
       <label class="center-block">Name:
-        <input class="form-control" formControlName="name">
+        <input class="form-control sheet-name-input" formControlName="name">
       </label>
 
-      <button type="submit" [disabled]="!sheet.form.valid" class="btn btn-success">Save</button>
+      <button type="submit" [disabled]="!sheet.form.valid" class="btn btn-success save-sheet-btn">Save</button>
     </div>
   </form>
 </div>

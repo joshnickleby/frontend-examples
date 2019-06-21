@@ -26,6 +26,9 @@ fdescribe('CharacterSheetDashboardComponent', () => {
     new CharacterSheet('Tully', 5)
   ];
 
+
+  // region SPECIFIC TO THIS TEMPLATE
+
   const sharedSheetLookupFn = (expected: CharacterSheet[], assignFn: (sheet: CharacterSheet) => any, selectorValue: string) => {
     const expectedVal = expected.map(assignFn);
 
@@ -47,6 +50,14 @@ fdescribe('CharacterSheetDashboardComponent', () => {
     assert.testCustom((id, el) => el.toString().includes(id));
   };
 
+  const checkRenderedLists = (expected: CharacterSheet[]) => {
+    // check the ids match for each row
+    sharedSheetLookupFn(expected, sheet => sheet.id, '.sheet-id');
+
+    // check the names match for each row
+    sharedSheetLookupFn(expected, sheet => sheet.name, '.sheet-name');
+  };
+
   const getFirstButtonsFn = () => {
     // get the first element in the list
     const rows: DebugElement[] = fixture.debugElement.queryAll(By.css('.sheets'));
@@ -56,6 +67,8 @@ fdescribe('CharacterSheetDashboardComponent', () => {
     // get the first buttons
     return firstRow.queryAll(By.css('button'));
   };
+
+  // endregion SPECIFIC TO THIS TEMPLATE
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -69,6 +82,7 @@ fdescribe('CharacterSheetDashboardComponent', () => {
     .compileComponents().then(() => {
       serviceSpy.selectedCharacterSheet$ = new SingleObjectList();
       serviceSpy.characterSheets$ = ListBehaviorSubject.create();
+      serviceSpy.newCharacterSheet$ = new SingleObjectList(CharacterSheet.generateNewCharacterSheet());
 
       fixture = TestBed.createComponent(CharacterSheetDashboardComponent);
       component = fixture.componentInstance;
@@ -81,9 +95,18 @@ fdescribe('CharacterSheetDashboardComponent', () => {
         component.characterSheetService.selectedCharacterSheet$.change(foundSheet);
       });
       serviceSpy.deleteCharacterSheet.and.callFake(id => {
-        const sheets = expectedSheets.filter(sheet => sheet.id !== id);
+        component.characterSheetService.characterSheets$.removeByCriteria('id', id);
+      });
+      serviceSpy.saveNewCharacterSheet.and.callFake(() => {
+        const sheet = component.characterSheetService.newCharacterSheet$.getItem();
 
-        component.characterSheetService.characterSheets$.next(sheets);
+        component.characterSheetService.newCharacterSheet$.change(CharacterSheet.generateNewCharacterSheet());
+
+        sheet.applyFormGroup();
+
+        sheet.id = 6;
+
+        component.characterSheetService.characterSheets$.add(sheet);
       });
 
       fixture.detectChanges();
@@ -95,11 +118,7 @@ fdescribe('CharacterSheetDashboardComponent', () => {
   });
 
   it('should display all character sheets', async(() => {
-    // check the ids match for each row
-    sharedSheetLookupFn(expectedSheets, sheet => sheet.id, '.sheet-id');
-
-    // check the names match for each row
-    sharedSheetLookupFn(expectedSheets, sheet => sheet.name, '.sheet-name');
+    checkRenderedLists(expectedSheets);
   }));
 
   it('should display a character when button gets clicked', async(() => {
@@ -138,7 +157,26 @@ fdescribe('CharacterSheetDashboardComponent', () => {
     // check that it has been removed
     const existingSheets = component.characterSheetService.characterSheets$.getValue();
 
-    sharedSheetLookupFn(existingSheets, sheet => sheet.id, '.sheet-id');
-    sharedSheetLookupFn(existingSheets, sheet => sheet.name, '.sheet-name');
+    checkRenderedLists(existingSheets);
+  }));
+
+  it('should input into the form, click the save button, and the new one should append to the bottom', async(() => {
+    const expectedNew = new CharacterSheet('Goober', 6);
+
+    // change form control
+    component.characterSheetService.newCharacterSheet$.getItem().form.controls['name'].setValue('Goober');
+
+    fixture.detectChanges();
+
+    // get the submit button
+    const submitButton = fixture.debugElement.queryAll(By.css('.save-sheet-btn'))[0];
+
+    // click the button
+    submitButton.nativeElement.click();
+
+    fixture.detectChanges();
+
+    // check that is has been added
+    checkRenderedLists([...expectedSheets, expectedNew]);
   }));
 });
